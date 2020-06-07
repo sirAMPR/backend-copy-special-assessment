@@ -29,13 +29,17 @@ def get_special_paths(dirname):
 
 
 def copy_to(path_list, dest_dir):
-    # your code here
-    return
+    """Given a path_list and dest_dir, copies files from list to destination"""
+    for item in path_list:
+        if dest_dir:
+            os.makedirs(dest_dir, exist_ok=True)
+            shutil.copy(item, dest_dir)
 
 
 def zip_to(path_list, dest_zip):
-    # your code here
-    return
+    """Given a path_list and dest_zip, creates a zip file of files"""
+    print("zip -j " + dest_zip + " " + "".join(path_list))
+    subprocess.run(["zip", "-j", dest_zip] + path_list)
 
 
 def main(args):
@@ -45,15 +49,11 @@ def main(args):
     parser.add_argument('--todir', help='dest dir for special files')
     parser.add_argument('--tozip', help='dest zipfile for special files')
     parser.add_argument('from_dir', help='directories to copy', nargs='+')
-    # TODO: add one more argument definition to parse the 'from_dir' argument
     ns = parser.parse_args(args)
 
     from_dir = ns.from_dir
     todir = ns.todir
     tozip = ns.tozip
-
-    # TODO: you must write your own code to get the command line args.
-    # Read the docs and examples for the argparse module about how to do this.
 
     # Parsing command line arguments is a must-have skill.
     # This is input data validation. If something is wrong (or missing) with
@@ -61,15 +61,12 @@ def main(args):
     # exit(1).
     file_list = get_special_paths(from_dir)
     if tozip:
-        print("zip -j " + tozip + " " + "".join(file_list))
-        subprocess.run(["zip", "-j", tozip] + file_list)
+        zip_to(file_list, tozip)
+    elif todir:
+        copy_to(file_list, todir)
     else:
         for item in file_list:
-            if todir:
-                os.makedirs(todir, exist_ok=True)
-                shutil.copy(item, todir)
-            else:
-                print(item)
+            print(item)
 
 
 if __name__ == "__main__":
