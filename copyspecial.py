@@ -22,8 +22,10 @@ def get_special_paths(dirname):
     result = []
     r = re.compile(r".*__\w+__.*")
     for directory in dirname:
-        new_list = list(filter(r.match, os.listdir(directory)))
-        result += new_list
+        path = os.path.abspath(directory)
+        for item in list(filter(r.match, os.listdir(directory))):
+            print(path + item)
+            result += [path + item]
     return result
 
 
@@ -57,7 +59,7 @@ def main(args):
     # any required args, the general rule is to print a usage message and
     # exit(1).
 
-    print(get_special_paths(dirname))
+    get_special_paths(dirname)
 
 
 if __name__ == "__main__":
