@@ -7,7 +7,7 @@
 # http://www.apache.org/licenses/LICENSE-2.0
 
 # give credits
-__author__ = "???"
+__author__ = "aradcliff"
 
 import re
 import os
@@ -19,8 +19,12 @@ import argparse
 
 def get_special_paths(dirname):
     """Given a dirname, returns a list of all its special files."""
-    # your code here
-    return
+    result = []
+    r = re.compile(r".*__\w+__.*")
+    for directory in dirname:
+        new_list = list(filter(r.match, os.listdir(directory)))
+        result += new_list
+    return result
 
 
 def copy_to(path_list, dest_dir):
@@ -39,8 +43,11 @@ def main(args):
     parser = argparse.ArgumentParser()
     parser.add_argument('--todir', help='dest dir for special files')
     parser.add_argument('--tozip', help='dest zipfile for special files')
+    parser.add_argument('from_dir', help='directories to copy', nargs='+')
     # TODO: add one more argument definition to parse the 'from_dir' argument
     ns = parser.parse_args(args)
+
+    dirname = ns.from_dir
 
     # TODO: you must write your own code to get the command line args.
     # Read the docs and examples for the argparse module about how to do this.
@@ -50,7 +57,7 @@ def main(args):
     # any required args, the general rule is to print a usage message and
     # exit(1).
 
-    # Your code here: Invoke (call) your functions
+    print(get_special_paths(dirname))
 
 
 if __name__ == "__main__":
