@@ -16,15 +16,16 @@ import shutil
 import subprocess
 import argparse
 
+REGEX = re.compile(r"__(\w+)__")
+
 
 def get_special_paths(dirname):
     """Given a dirname, returns a list of all its special files."""
     result = []
-    r = re.compile(r".*__\w+__.*")
-    for directory in dirname:
-        path = os.path.abspath(directory)
-        for item in list(filter(r.match, os.listdir(directory))):
-            result += [path + '/' + item]
+
+    path = os.path.abspath(dirname)
+    for item in list(filter(REGEX.search, os.listdir(dirname))):
+        result += [os.path.join(path, item)]  # [path + '/' + item] # .join
     return result
 
 
@@ -38,7 +39,7 @@ def copy_to(path_list, dest_dir):
 
 def zip_to(path_list, dest_zip):
     """Given a path_list and dest_zip, creates a zip file of files"""
-    print("zip -j " + dest_zip + " " + "".join(path_list))
+    print("zip -j " + dest_zip + " " + " ".join(path_list))
     subprocess.run(["zip", "-j", dest_zip] + path_list)
 
 
@@ -59,14 +60,13 @@ def main(args):
     # This is input data validation. If something is wrong (or missing) with
     # any required args, the general rule is to print a usage message and
     # exit(1).
-    file_list = get_special_paths(from_dir)
+    file_list = get_special_paths(from_dir[0])
     if tozip:
         zip_to(file_list, tozip)
     elif todir:
         copy_to(file_list, todir)
-    else:
-        for item in file_list:
-            print(item)
+    for item in file_list:
+        print(item)
 
 
 if __name__ == "__main__":
